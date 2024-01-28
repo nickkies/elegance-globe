@@ -27,6 +27,7 @@
       "warn",
       { "extensions": [".ts", ".tsx", ".js"] }
     ],
-    "no-useless-catch": "off"
+    "no-useless-catch": "off",
+    "semi": ["error", "always"]
   }
 }
