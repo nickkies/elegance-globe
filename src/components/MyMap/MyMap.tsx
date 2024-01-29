@@ -19,7 +19,7 @@ export default function MyMap() {
     const mapObj = new Map({
       view: new View({
         projection: get('EPSG:3857') || 'EPSG:4326',
-        zoom: 7,
+        zoom: 8,
         minZoom: 7,
         center: [14230000, 4400000],
       }),

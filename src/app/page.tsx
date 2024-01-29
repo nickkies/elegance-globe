@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import styled from 'styled-components';
 
-const MyMap = dynamic(() => import('@/Components/MyMap'), { ssr: false });
+const MyMap = dynamic(() => import('@/components/MyMap/MyMap'), { ssr: false });
 
 const Wrap = styled.div`
   height: 100vh;
