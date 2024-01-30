@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Loading, Error } from '.';
+import Error from './Error';
+import Loading from './Loading';
 
 interface Props {
   children: React.ReactNode;
