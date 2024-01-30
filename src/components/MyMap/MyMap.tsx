@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Map, View } from 'ol';
 import { get } from 'ol/proj';
 import { Tile } from 'ol/layer';
 import { OSM } from 'ol/source';
 import styled from 'styled-components';
+import { useRecoilValue } from 'recoil';
+import getUV from './atom';
 
 const Wrap = styled.div`
   width: 100%;
@@ -12,6 +14,9 @@ const Wrap = styled.div`
 
 export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const [map, setMap] = useState<Map | null>(null);
+
+  const uvBuffer = useRecoilValue(getUV);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
@@ -27,8 +32,16 @@ export default function MyMap() {
     });
 
     mapObj.setTarget(mapRef.current);
+    setMap(mapObj);
+
     return () => mapObj.setTarget('');
   }, []);
+
+  useEffect(() => {
+    if (!map) return;
+
+    console.dir(uvBuffer);
+  }, [map, uvBuffer]);
 
   return <Wrap ref={mapRef} />;
 }
