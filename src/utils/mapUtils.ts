@@ -1,4 +1,42 @@
-import { Extent } from 'ol/extent';
+import { FrameState } from 'ol/PluggableMap';
+import { Extent, getHeight, getWidth } from 'ol/extent';
+
+/**
+ * @param {Extent} extent
+ * @param {number[]} coordinates
+ * @returns {void}
+ */
+export const randomizeCoordinates = (
+  extent: Extent,
+  coordinates: number[],
+): void => {
+  coordinates[0] = Math.random() * getWidth(extent) + extent[0];
+  coordinates[1] = Math.random() * getHeight(extent) + extent[1];
+};
+
+/**
+ * @param {FrameState} { size, pixelRatio }
+ * @param {HTMLCanvasElement} canvas
+ * @returns {boolean} - True if the canvas is resized, false otherwise.
+ */
+export const resizeCanvasIfNeeded = (
+  { size, pixelRatio }: FrameState,
+  canvas: HTMLCanvasElement,
+): boolean => {
+  let [width, height] = size;
+
+  width *= pixelRatio;
+  height *= pixelRatio;
+
+  if (canvas.width === width && canvas.height === height) {
+    return false;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+
+  return true;
+};
 
 /**
  * @param {Extent} extent

@@ -5,7 +5,9 @@ import { Tile } from 'ol/layer';
 import { OSM } from 'ol/source';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
-import getUV from './atom';
+
+import CanvasWindParticlesLayer from '@/components/Custom/CanvasWindParticlesLayer';
+import fetchUV from './atom';
 
 const Wrap = styled.div`
   width: 100%;
@@ -15,8 +17,7 @@ const Wrap = styled.div`
 export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [map, setMap] = useState<Map | null>(null);
-
-  const uvBuffer = useRecoilValue(getUV);
+  const uvBuffer = useRecoilValue(fetchUV);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
@@ -40,7 +41,16 @@ export default function MyMap() {
   useEffect(() => {
     if (!map) return;
 
-    console.dir(uvBuffer);
+    map.addLayer(
+      new CanvasWindParticlesLayer({
+        map,
+        uvBuffer,
+        particles: 3000,
+        ttl: 50,
+        fading: 0.9,
+        particleSize: 1.5,
+      }),
+    );
   }, [map, uvBuffer]);
 
   return <Wrap ref={mapRef} />;

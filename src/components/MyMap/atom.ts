@@ -2,8 +2,8 @@ import { selector } from 'recoil';
 
 import UVBuffer from '@/utils/UVBuffer';
 
-const getUV = selector({
-  key: 'getUV',
+const fetchUV = selector({
+  key: 'fetchUV',
   get: async () => {
     const [{ extent, width, height }, us, vs] = await Promise.all([
       fetch('/data/metadata.json').then((r) => r.json()),
@@ -21,4 +21,4 @@ const getUV = selector({
   },
 });
 
-export default getUV;
+export default fetchUV;
