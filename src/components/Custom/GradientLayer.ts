@@ -80,7 +80,7 @@ export default class GradientLayer extends CustomWebGLLayer {
     `;
     const fragCode = `
       #ifdef GL_FRAGMENT_PRECISION_HIGH
-      precision highp float;
+        precision highp float;
       #else
         precision mediump float;
       #endif
@@ -104,10 +104,10 @@ export default class GradientLayer extends CustomWebGLLayer {
 
         vec3 color = colorC;
 
-        if (speed < 5.0) {
-          color = mix(colorA, colorB, speed / 5.0);
-        } else if (speed < 10.0) {
-          color = mix(colorB, colorC, (speed - 5.0) / 5.0);
+        if (speed < 4.0) {
+          color = mix(colorA, colorB, speed / 4.0);
+        } else if (speed < 8.0) {
+          color = mix(colorB, colorC, (speed - 4.0) / 4.0);
         }
         
         gl_FragColor = vec4(color.rgb, 1.0);
