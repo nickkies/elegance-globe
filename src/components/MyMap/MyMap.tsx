@@ -1,9 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Map, View } from 'ol';
 import { get } from 'ol/proj';
 import { Tile } from 'ol/layer';
 import { OSM } from 'ol/source';
 import styled from 'styled-components';
+import { useRecoilValue } from 'recoil';
+
+import { CanvasWindParticlesLayer, GradientLayer } from '@/components/Custom';
+import fetchUV from './atom';
 
 const Wrap = styled.div`
   width: 100%;
@@ -12,6 +16,8 @@ const Wrap = styled.div`
 
 export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const [map, setMap] = useState<Map | null>(null);
+  const uvBuffer = useRecoilValue(fetchUV);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
@@ -27,8 +33,33 @@ export default function MyMap() {
     });
 
     mapObj.setTarget(mapRef.current);
+    setMap(mapObj);
+
     return () => mapObj.setTarget('');
   }, []);
+
+  useEffect(() => {
+    if (!map) return;
+
+    map.addLayer(
+      new CanvasWindParticlesLayer({
+        map,
+        uvBuffer,
+        particles: 3000,
+        ttl: 50,
+        fading: 0.9,
+        particleSize: 1.5,
+      }),
+    );
+
+    map.addLayer(
+      new GradientLayer({
+        map,
+        uvBuffer,
+        opacity: 0.25,
+      }),
+    );
+  }, [map, uvBuffer]);
 
   return <Wrap ref={mapRef} />;
 }

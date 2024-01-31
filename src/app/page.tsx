@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import styled from 'styled-components';
+import { RecoilRoot } from 'recoil';
 
 import MixedBoundary from '@/components/Common/MixedBoundary';
 
@@ -14,10 +15,12 @@ const Wrap = styled.div`
 
 export default function Home() {
   return (
-    <Wrap>
-      <MixedBoundary>
-        <MyMap />
-      </MixedBoundary>
-    </Wrap>
+    <RecoilRoot>
+      <Wrap>
+        <MixedBoundary>
+          <MyMap />
+        </MixedBoundary>
+      </Wrap>
+    </RecoilRoot>
   );
 }
