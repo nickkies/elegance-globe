@@ -17,20 +17,20 @@ export default class UVBuffer {
 
   rotationBuffer: Float32Array;
 
-  uBuffer: Float32Array | number[];
+  uBuffer: Float32Array;
 
-  vBuffer: Float32Array | number[];
+  vBuffer: Float32Array;
 
   constructor(
-    us: Float32Array | number[],
-    vs: Float32Array | number[],
+    us: Float32Array | null,
+    vs: Float32Array | null,
     width: number,
     height: number,
     extent: number[],
   ) {
     this.size = width * height;
 
-    if (us.length !== this.size || vs.length !== this.size) {
+    if (!us || !vs || us.length !== this.size || vs.length !== this.size) {
       throw new Error('🚨Check uv size🚨');
     }
 

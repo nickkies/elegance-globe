@@ -34,10 +34,14 @@ export default class CustomWebGLLayerRenderer extends Observable {
     return layer.doRender.call(layer, frameState, canvas.getContext('webgl'));
   }
 
-  composeFrame(_: unknown, __: unknown, context: WebGLRenderingContext): void {
+  composeFrame(
+    _: unknown,
+    __: unknown,
+    context: CanvasRenderingContext2D,
+  ): void {
     const { layer, canvas } = this;
-    (context as any).globalAlpha = layer.getOpacity();
-    (context as any).drawImage(canvas, 0, 0, 0, canvas.width, canvas.height);
-    (context as any).globalAlpha = 1;
+    context.globalAlpha = layer.getOpacity();
+    context.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+    context.globalAlpha = 1;
   }
 }

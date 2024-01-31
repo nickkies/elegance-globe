@@ -6,7 +6,7 @@ import { OSM } from 'ol/source';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 
-import CanvasWindParticlesLayer from '@/components/Custom/CanvasWindParticlesLayer';
+import { CanvasWindParticlesLayer, GradientLayer } from '@/components/Custom';
 import fetchUV from './atom';
 
 const Wrap = styled.div`
@@ -49,6 +49,14 @@ export default function MyMap() {
         ttl: 50,
         fading: 0.9,
         particleSize: 1.5,
+      }),
+    );
+
+    map.addLayer(
+      new GradientLayer({
+        map,
+        uvBuffer,
+        opacity: 0.25,
       }),
     );
   }, [map, uvBuffer]);

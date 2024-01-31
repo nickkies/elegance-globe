@@ -1,5 +1,7 @@
+import { Extent, getHeight, getWidth, getCenter, getSize } from 'ol/extent';
+import { create, scale, translate, multiply, Transform } from 'ol/transform';
 import { FrameState } from 'ol/PluggableMap';
-import { Extent, getHeight, getWidth } from 'ol/extent';
+import { Map } from 'ol';
 
 /**
  * @param {Extent} extent
@@ -90,4 +92,44 @@ export const interpolatePosition = (
   const dfxy = fx1y1 + fx2y2 - fx2y1 - fx1y2;
 
   return dfx * dx + dfy * dy + dfxy * dx * dy + fx1y1;
+};
+
+const createExtentTransformToUnit = (extent: Extent): Transform => {
+  const center = getCenter(extent);
+  const size = getSize(extent);
+  const translateToOrigin = translate(create(), -center[0], -center[1]);
+  const scaleToUnit = scale(create(), 2 / size[0], 2 / size[1]);
+  return multiply(scaleToUnit, translateToOrigin);
+};
+
+const createExtentTransformFromUnit = (extent: Extent): Transform => {
+  const center = getCenter(extent);
+  const size = getSize(extent);
+  const scaleToSize = scale(create(), size[0] / 2, size[1] / 2);
+  const translateToCenter = translate(create(), center[0], center[1]);
+  return multiply(translateToCenter, scaleToSize);
+};
+
+const createExtentTransform = (
+  srcExtent: number[],
+  dstExtent: number[],
+): Transform => {
+  const A = createExtentTransformToUnit(srcExtent);
+  const B = createExtentTransformFromUnit(dstExtent);
+  return multiply(B, A);
+};
+
+export const createMatrix3FromTransform = (
+  map: Map,
+  extent: Extent,
+): number[] => {
+  const mapSize = map.getSize();
+  const view = map.getView();
+  const vieportExtent = view.calculateExtent(mapSize);
+
+  const A = createExtentTransform([0, 0, ...mapSize], vieportExtent);
+  const B = createExtentTransform(extent, [0, 0, 1, 1]);
+  const [t0, t1, t2, t3, t4, t5] = multiply(B, A);
+
+  return [t0, t1, 0, t2, t3, 0, t4, t5, 1];
 };
