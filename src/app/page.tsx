@@ -6,7 +6,7 @@ import { RecoilRoot } from 'recoil';
 
 import MixedBoundary from '@/components/Common/MixedBoundary';
 
-const MyMap = dynamic(() => import('@/components/MyMap/MyMap'), { ssr: false });
+const MyMap = dynamic(() => import('@/components/MyMap'), { ssr: false });
 
 const Wrap = styled.div`
   height: 100vh;
