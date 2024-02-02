@@ -5,9 +5,10 @@ export const MAP_INIT = {
 
 export const PARTICLES_LAYER_INIT = {
   particles: 3000,
+  hex: '#b3a3ef',
   ttl: 50,
   fading: 0.9,
-  particleSize: 1.5,
+  particleSize: 2,
 };
 
 export const GRADIENT_LAYER_INIT = {

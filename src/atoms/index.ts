@@ -26,7 +26,7 @@ export const fetchUV = selector({
 
 export const referenceAtom = atom({
   key: 'referenceAtom',
-  default: 5,
+  default: 7,
 });
 
 export const colorSelector = selector({
@@ -37,9 +37,9 @@ export const colorSelector = selector({
 
     return {
       deg: rv * 36,
-      color: HEX_ARR[i],
+      hex: HEX_ARR[i],
       degRev: rv * 36 + 180,
-      colorRev: HEX_ARR[i % HEX_ARR.length],
+      hexRev: HEX_ARR[i % HEX_ARR.length],
     };
   },
 });
