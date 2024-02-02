@@ -1,7 +1,13 @@
-import { useRecoilState } from 'recoil';
+import { SetterOrUpdater, useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { referenceValue } from '@/atoms';
+import { colorSelector, referenceAtom } from '@/atoms';
+import { ColorSelector } from '@/interfaces';
+
+interface SlidProps {
+  deg: number;
+  hex: string;
+}
 
 const Wrap = styled.div`
   z-index: 9999;
@@ -22,20 +28,20 @@ const Wrap = styled.div`
   }
 `;
 
-const RangeInput = styled.input`
+const RangeInput = styled.input<SlidProps>`
   appearance: none;
   outline: none;
   width: 280px;
   height: 2px;
   border-radius: 9999px;
-  background-color: hsl(180, 71%, 79%);
+  background-color: ${({ deg }) => `hsl(${deg}, 71%, 79%)`};
   opacity: 0.8;
   &::-webkit-slider-thumb {
     appearance: none;
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: hsl(180, 71%, 69%);
+    background: ${({ deg }) => `hsl(${deg}, 71%, 69%)`};
     border: 2px solid #fff;
     opacity: 0.9;
     cursor: pointer;
@@ -43,7 +49,7 @@ const RangeInput = styled.input`
   &::-moz-range-thumb {
     width: 25px;
     height: 25px;
-    background: #a3efef;
+    background: ${({ hex }) => hex};
     cursor: pointer;
   }
   @media (max-width: 1024px) {
@@ -52,10 +58,12 @@ const RangeInput = styled.input`
 `;
 
 export default function Slider() {
-  const [rv, setRv] = useRecoilState(referenceValue);
+  const [rv, setRv]: [number, SetterOrUpdater<number>] =
+    useRecoilState(referenceAtom);
+  const { degRev, colorRev }: ColorSelector = useRecoilValue(colorSelector);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setRv(e.currentTarget.value);
+    setRv(Number(e.currentTarget.value));
   };
 
   return (
@@ -67,6 +75,8 @@ export default function Slider() {
         max="10"
         value={rv}
         onChange={onChange}
+        deg={degRev}
+        hex={colorRev}
       />
     </Wrap>
   );

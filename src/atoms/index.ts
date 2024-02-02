@@ -1,6 +1,9 @@
+import { ColorSelector } from '@/interfaces';
+
 import { atom, selector } from 'recoil';
 
 import UVBuffer from '@/utils/UVBuffer';
+import { HEX_ARR } from '@/constants';
 
 export const fetchUV = selector({
   key: 'fetchUV',
@@ -21,7 +24,22 @@ export const fetchUV = selector({
   },
 });
 
-export const referenceValue = atom({
-  key: 'referenceValue',
-  default: '1',
+export const referenceAtom = atom({
+  key: 'referenceAtom',
+  default: 5,
+});
+
+export const colorSelector = selector({
+  key: 'colorSelector',
+  get: ({ get }): ColorSelector => {
+    const rv = get(referenceAtom);
+    const i = rv - 1;
+
+    return {
+      deg: rv * 36,
+      color: HEX_ARR[i],
+      degRev: rv * 36 + 180,
+      colorRev: HEX_ARR[i % HEX_ARR.length],
+    };
+  },
 });

@@ -17,3 +17,10 @@ export interface ParticleConfig extends Config {
 export interface GradientConfig extends Config {
   opacity: number;
 }
+
+export interface ColorSelector {
+  deg: number;
+  degRev: number;
+  color: string;
+  colorRev: string;
+}
