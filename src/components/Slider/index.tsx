@@ -1,4 +1,7 @@
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+
+import { referenceValue } from '@/atoms';
 
 const Wrap = styled.div`
   z-index: 9999;
@@ -49,9 +52,22 @@ const RangeInput = styled.input`
 `;
 
 export default function Slider() {
+  const [rv, setRv] = useRecoilState(referenceValue);
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setRv(e.currentTarget.value);
+  };
+
   return (
     <Wrap>
-      <RangeInput type="range" min="1" max="10" defaultValue="1" step="1" />
+      <RangeInput
+        type="range"
+        step="1"
+        min="1"
+        max="10"
+        value={rv}
+        onChange={onChange}
+      />
     </Wrap>
   );
 }

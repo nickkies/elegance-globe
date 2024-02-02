@@ -1,8 +1,8 @@
-import { selector } from 'recoil';
+import { atom, selector } from 'recoil';
 
 import UVBuffer from '@/utils/UVBuffer';
 
-const fetchUV = selector({
+export const fetchUV = selector({
   key: 'fetchUV',
   get: async () => {
     const [{ extent, width, height }, us, vs] = await Promise.all([
@@ -21,4 +21,7 @@ const fetchUV = selector({
   },
 });
 
-export default fetchUV;
+export const referenceValue = atom({
+  key: 'referenceValue',
+  default: '1',
+});

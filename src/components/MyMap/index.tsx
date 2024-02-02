@@ -12,7 +12,7 @@ import {
   PARTICLES_LAYER_INIT,
   GRADIENT_LAYER_INIT,
 } from '@/constants';
-import fetchUV from './atom';
+import { fetchUV } from '@/atoms';
 
 const Wrap = styled.div`
   width: 100%;
