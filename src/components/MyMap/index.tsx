@@ -34,6 +34,9 @@ export default function MyMap() {
       layers: [new Tile({ source: new OSM() })],
     });
 
+    const viewPort = mapObj.getViewport();
+    viewPort.style.backgroundColor = '#1a1a1a';
+
     mapObj.setTarget(mapRef.current);
     setMap(mapObj);
 

@@ -21,7 +21,7 @@ const Wrap = styled.div`
   width: 300px;
   height: 36px;
   opacity: 0.9;
-  background-color: #1a1a1a;
+  background-color: #1f1f1f;
   border-radius: 18px;
   @media (max-width: 1024px) {
     width: 90%;
@@ -43,7 +43,6 @@ const RangeInput = styled.input<SlidProps>`
     border-radius: 50%;
     background: ${({ deg }) => `hsl(${deg}, 71%, 69%)`};
     border: 2px solid #fff;
-    opacity: 0.9;
     cursor: pointer;
   }
   &::-moz-range-thumb {
