@@ -12,7 +12,7 @@ import {
   PARTICLES_LAYER_INIT,
   GRADIENT_LAYER_INIT,
 } from '@/constants';
-import { fetchUV } from '@/atoms';
+import { colorSelector, fetchUV } from '@/atoms';
 
 const Wrap = styled.div`
   width: 100%;
@@ -21,8 +21,14 @@ const Wrap = styled.div`
 
 export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
+
   const [map, setMap] = useState<Map | null>(null);
+  const [particleLayer, setParticleLayer] =
+    useState<CanvasWindParticlesLayer | null>(null);
+
   const uvBuffer = useRecoilValue(fetchUV);
+  const { rv, hex } = useRecoilValue(colorSelector);
+
   useEffect(() => {
     if (!mapRef.current) return undefined;
 
@@ -46,13 +52,14 @@ export default function MyMap() {
   useEffect(() => {
     if (!map) return;
 
-    map.addLayer(
-      new CanvasWindParticlesLayer({
-        map,
-        uvBuffer,
-        ...PARTICLES_LAYER_INIT,
-      }),
-    );
+    const pl = new CanvasWindParticlesLayer({
+      map,
+      uvBuffer,
+      ...PARTICLES_LAYER_INIT,
+    });
+
+    map.addLayer(pl);
+    setParticleLayer(pl);
 
     map.addLayer(
       new GradientLayer({
@@ -62,6 +69,11 @@ export default function MyMap() {
       }),
     );
   }, [map, uvBuffer]);
+
+  useEffect(() => {
+    if (!particleLayer) return;
+    particleLayer.setData(hex, rv);
+  }, [particleLayer, hex, rv]);
 
   return <Wrap ref={mapRef} />;
 }

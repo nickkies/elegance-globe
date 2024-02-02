@@ -36,6 +36,7 @@ export const colorSelector = selector({
     const i = rv - 1;
 
     return {
+      rv,
       deg: rv * 36,
       hex: HEX_ARR[i],
       degRev: rv * 36 + 180,
