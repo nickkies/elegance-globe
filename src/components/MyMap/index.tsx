@@ -7,6 +7,11 @@ import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 
 import { CanvasWindParticlesLayer, GradientLayer } from '@/components/Custom';
+import {
+  MAP_INIT,
+  PARTICLES_LAYER_INIT,
+  GRADIENT_LAYER_INIT,
+} from '@/constants';
 import fetchUV from './atom';
 
 const Wrap = styled.div`
@@ -18,16 +23,13 @@ export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [map, setMap] = useState<Map | null>(null);
   const uvBuffer = useRecoilValue(fetchUV);
-
   useEffect(() => {
     if (!mapRef.current) return undefined;
 
     const mapObj = new Map({
       view: new View({
         projection: get('EPSG:3857') || 'EPSG:4326',
-        zoom: 8,
-        minZoom: 7,
-        center: [14230000, 4400000],
+        ...MAP_INIT,
       }),
       layers: [new Tile({ source: new OSM() })],
     });
@@ -45,10 +47,7 @@ export default function MyMap() {
       new CanvasWindParticlesLayer({
         map,
         uvBuffer,
-        particles: 3000,
-        ttl: 50,
-        fading: 0.9,
-        particleSize: 1.5,
+        ...PARTICLES_LAYER_INIT,
       }),
     );
 
@@ -56,7 +55,7 @@ export default function MyMap() {
       new GradientLayer({
         map,
         uvBuffer,
-        opacity: 0.25,
+        ...GRADIENT_LAYER_INIT,
       }),
     );
   }, [map, uvBuffer]);
