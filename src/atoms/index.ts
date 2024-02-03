@@ -26,7 +26,7 @@ export const fetchUV = selector({
 
 export const referenceAtom = atom({
   key: 'referenceAtom',
-  default: 7,
+  default: 5,
 });
 
 export const colorSelector = selector({
