@@ -7,7 +7,9 @@ import { RecoilRoot } from 'recoil';
 import MixedBoundary from '@/components/Common/MixedBoundary';
 
 const MyMap = dynamic(() => import('@/components/MyMap'), { ssr: false });
-const Slider = dynamic(() => import('@/components/Slider'), { ssr: false });
+const Controls = dynamic(() => import('@/components/Controls'), {
+  ssr: false,
+});
 
 const Wrap = styled.div`
   height: 100vh;
@@ -22,7 +24,7 @@ export default function Home() {
         <MixedBoundary>
           <MyMap />
         </MixedBoundary>
-        <Slider />
+        <Controls />
       </Wrap>
     </RecoilRoot>
   );
