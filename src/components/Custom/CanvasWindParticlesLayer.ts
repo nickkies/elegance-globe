@@ -33,6 +33,8 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
 
   viewportWithDataExtent: Extent;
 
+  hex: string;
+
   constructor({
     map,
     uvBuffer,
@@ -40,6 +42,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     ttl,
     fading,
     particleSize,
+    hex,
   }: ParticleConfig) {
     super({
       renderFunction: (
@@ -47,6 +50,8 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
         context: CanvasRenderingContext2D | null,
       ) => this.render(frameState, context),
     });
+    if (!particles) throw new Error('🚨check particles🚨');
+    if (!hex) throw new Error('🚨check hex🚨');
 
     this.map = map;
     this.uvBuffer = uvBuffer;
@@ -59,11 +64,20 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     this.particleSize = particleSize;
     this.pixel = [];
     this.viewportWithDataExtent = createEmpty();
+    this.hex = hex;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this.map.getRenderer() as any).registerLayerRenderers([
       CustomCanvasLayerRenderer,
     ]);
+  }
+
+  setData(hex: string, rv: number) {
+    this.hex = hex;
+    this.particles = Array.from({ length: rv * 500 + 499 }).map(() => ({
+      ttl: Math.random() * rv * 10,
+      coordinates: [],
+    }));
   }
 
   render(
@@ -72,9 +86,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
   ): void {
     if (!context) return;
 
-    if (context.fillStyle !== 'white') {
-      context.fillStyle = 'white';
-    }
+    context.fillStyle = this.hex;
 
     this.advanceParticles(frameState, context);
 
