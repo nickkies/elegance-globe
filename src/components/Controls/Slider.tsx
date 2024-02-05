@@ -19,7 +19,7 @@ const Wrap = styled.div`
   align-items: center;
   justify-content: center;
   width: 300px;
-  height: 36px;
+  height: 3em;
   opacity: 0.9;
   background-color: #1f1f1f;
   border-radius: 18px;
@@ -38,16 +38,16 @@ const RangeInput = styled.input<SlidProps>`
   opacity: 0.8;
   &::-webkit-slider-thumb {
     appearance: none;
-    width: 24px;
-    height: 24px;
+    width: 2em;
+    height: 2em;
     border-radius: 50%;
     background: ${({ $deg }) => `hsl(${$deg}, 71%, 69%)`};
     border: 2px solid #fff;
     cursor: pointer;
   }
   &::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
+    width: 2em;
+    height: 2em;
     background: ${({ $hex }) => $hex};
     cursor: pointer;
   }
