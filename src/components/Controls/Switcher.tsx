@@ -7,7 +7,7 @@ const Wrap = styled.div`
   z-index: 9999;
   position: absolute;
   @media (min-width: 1024px) {
-    bottom: 1rem;
+    bottom: 1.5rem;
     left: calc(50% + 160px);
   }
   @media (max-width: 1024px) {
@@ -72,13 +72,13 @@ const Ear = styled.div`
 const RightEar = styled(Ear)<{ isLight: boolean }>`
   left: auto;
   right: 0px;
-  transform: rotate(60deg) scaleX(-1);
+  transform: scaleX(-1) rotate(-35deg);
   transform-origin: center bottom;
   transition: 0.4s ease-in-out;
   ${({ isLight }) =>
     isLight &&
     css`
-      transform: scaleX(-1) rotate(-35deg);
+      transform: rotate(60deg) scaleX(-1);
       transition-delay: 0.6s;
     `}
 `;

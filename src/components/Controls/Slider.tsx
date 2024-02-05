@@ -13,7 +13,7 @@ const Wrap = styled.div`
   z-index: 9999;
   position: absolute;
   left: 50%;
-  bottom: 1rem;
+  bottom: 1.5rem;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
