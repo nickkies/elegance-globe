@@ -41,11 +41,9 @@ export default class GradientLayer extends CustomWebGLLayer {
   ): boolean {
     if (!context) return false;
 
-    if (!this.matrixLoc) {
-      this.createProgram(context);
-    }
-
+    this.createProgram(context);
     this.draw(context);
+
     frameState.animate = true;
     return true;
   }
