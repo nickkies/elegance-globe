@@ -8,6 +8,8 @@ import { OSM } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
 
 import { CanvasWindParticlesLayer, GradientLayer } from '@/components/Custom';
 import {
@@ -15,9 +17,7 @@ import {
   PARTICLES_LAYER_INIT,
   GRADIENT_LAYER_INIT,
 } from '@/constants';
-import { colorSelector, fetchUV } from '@/atoms';
-import Style from 'ol/style/Style';
-import Stroke from 'ol/style/Stroke';
+import { colorSelector, fetchUV, isDarkAtom } from '@/atoms';
 
 const Wrap = styled.div`
   width: 100%;
@@ -49,9 +49,7 @@ export default function MyMap() {
 
   const uvBuffer = useRecoilValue(fetchUV);
   const { rv, hex } = useRecoilValue(colorSelector);
-
-  // TODO REMOVE
-  const [bool, setBool] = useState(false);
+  const isDark = useRecoilValue(isDarkAtom);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
@@ -76,6 +74,8 @@ export default function MyMap() {
   useEffect(() => {
     if (!map) return;
 
+    // console.count('map init');
+
     const canvasWindParticlesLayer = new CanvasWindParticlesLayer({
       map,
       uvBuffer,
@@ -99,26 +99,31 @@ export default function MyMap() {
 
   useEffect(() => {
     if (particlesLayer) {
+      // console.count('change color');
       particlesLayer.setData(hex, rv);
     }
   }, [particlesLayer, hex, rv]);
 
-  // TODO REMOVE
   useEffect(() => {
     if (!map) return;
+
+    // console.count('change layer group before check');
+
     if (!(lightLayers.gradientLayer instanceof GradientLayer)) {
       return;
     }
 
+    // console.count('change layer group after check');
+
     let removes;
     let adds;
 
-    if (bool) {
-      removes = darkLayers;
-      adds = lightLayers;
-    } else {
+    if (isDark) {
       removes = lightLayers;
       adds = darkLayers;
+    } else {
+      removes = darkLayers;
+      adds = lightLayers;
     }
 
     Object.entries(adds).forEach((layer) => {
@@ -127,12 +132,10 @@ export default function MyMap() {
     Object.entries(removes).forEach((layer) => {
       map.removeLayer(layer[1]);
     });
-  }, [map, bool]);
 
-  // TODO REMOVE
-  useEffect(() => {
-    setBool((prev) => !prev);
-  }, [rv]);
+    // manage effects of layers is defined above uesEffect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, isDark]);
 
   return <Wrap ref={mapRef} />;
 }

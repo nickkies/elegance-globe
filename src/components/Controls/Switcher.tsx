@@ -1,4 +1,7 @@
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+
+import { isDarkAtom } from '@/atoms';
 
 const Wrap = styled.div`
   z-index: 9999;
@@ -86,9 +89,20 @@ const Mouth = styled.div`
 `;
 
 export default function Switcher() {
+  const [isDark, setIsDark] = useRecoilState(isDarkAtom);
+
+  const onChange = () => {
+    setIsDark(!isDark);
+  };
+
   return (
     <Wrap>
-      <Input type="checkbox" id="is-dark" defaultValue="true" />
+      <Input
+        type="checkbox"
+        id="is-dark"
+        checked={isDark}
+        onChange={onChange}
+      />
       <Label htmlFor="is-dark">
         <Dog>
           <Ear />
