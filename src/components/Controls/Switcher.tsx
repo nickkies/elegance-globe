@@ -69,14 +69,14 @@ const Ear = styled.div`
     inset -4px 0 0 0px #ffffff;
   transform: rotate(-40deg);
 `;
-const RightEar = styled(Ear)<{ isLight: boolean }>`
+const RightEar = styled(Ear)<{ $light: string }>`
   left: auto;
   right: 0px;
   transform: scaleX(-1) rotate(-35deg);
   transform-origin: center bottom;
   transition: 0.4s ease-in-out;
-  ${({ isLight }) =>
-    isLight &&
+  ${({ $light }) =>
+    $light &&
     css`
       transform: rotate(60deg) scaleX(-1);
       transition-delay: 0.6s;
@@ -102,7 +102,7 @@ const Eyes = styled.div`
     16px 0 0 #222,
     22px -4px 0 12px #e4ac04;
 `;
-const Mouth = styled.div<{ isLight: boolean }>`
+const Mouth = styled.div<{ $light: string }>`
   position: absolute;
   background: #222;
   width: 14px;
@@ -127,8 +127,8 @@ const Mouth = styled.div<{ isLight: boolean }>`
     content: '';
     position: absolute;
   }
-  ${({ isLight }) =>
-    isLight &&
+  ${({ $light }) =>
+    $light &&
     css`
       transform: scale(1);
       transition-delay: 0.7s;
@@ -146,17 +146,17 @@ export default function Switcher() {
     <Wrap>
       <Input
         type="checkbox"
-        id="is-dark"
+        id="is-light"
         checked={isLight}
         onChange={onChange}
       />
-      <Label htmlFor="is-dark">
+      <Label htmlFor="is-light">
         <Dog>
           <Ear />
-          <RightEar isLight={isLight} />
+          <RightEar $light={isLight.toString()} />
           <Face>
             <Eyes />
-            <Mouth isLight={isLight} />
+            <Mouth $light={isLight.toString()} />
           </Face>
         </Dog>
       </Label>
