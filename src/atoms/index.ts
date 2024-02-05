@@ -43,7 +43,7 @@ export const colorSelector = selector({
   },
 });
 
-export const isDarkAtom = atom({
-  key: 'isDarkAtom',
-  default: true,
+export const isLightAtom = atom({
+  key: 'isLightAtom',
+  default: false,
 });

@@ -1,7 +1,7 @@
 import { useRecoilState } from 'recoil';
 import styled, { css } from 'styled-components';
 
-import { isDarkAtom } from '@/atoms';
+import { isLightAtom } from '@/atoms';
 
 const Wrap = styled.div`
   z-index: 9999;
@@ -69,14 +69,14 @@ const Ear = styled.div`
     inset -4px 0 0 0px #ffffff;
   transform: rotate(-40deg);
 `;
-const RightEar = styled(Ear)<{ isDark: boolean }>`
+const RightEar = styled(Ear)<{ isLight: boolean }>`
   left: auto;
   right: 0px;
   transform: rotate(60deg) scaleX(-1);
   transform-origin: center bottom;
   transition: 0.4s ease-in-out;
-  ${({ isDark }) =>
-    isDark &&
+  ${({ isLight }) =>
+    isLight &&
     css`
       transform: scaleX(-1) rotate(-35deg);
       transition-delay: 0.6s;
@@ -102,7 +102,7 @@ const Eyes = styled.div`
     16px 0 0 #222,
     22px -4px 0 12px #e4ac04;
 `;
-const Mouth = styled.div<{ isDark: boolean }>`
+const Mouth = styled.div<{ isLight: boolean }>`
   position: absolute;
   background: #222;
   width: 14px;
@@ -127,8 +127,8 @@ const Mouth = styled.div<{ isDark: boolean }>`
     content: '';
     position: absolute;
   }
-  ${({ isDark }) =>
-    isDark &&
+  ${({ isLight }) =>
+    isLight &&
     css`
       transform: scale(1);
       transition-delay: 0.7s;
@@ -136,10 +136,10 @@ const Mouth = styled.div<{ isDark: boolean }>`
 `;
 
 export default function Switcher() {
-  const [isDark, setIsDark] = useRecoilState(isDarkAtom);
+  const [isLight, setisLight] = useRecoilState(isLightAtom);
 
   const onChange = () => {
-    setIsDark(!isDark);
+    setisLight(!isLight);
   };
 
   return (
@@ -147,16 +147,16 @@ export default function Switcher() {
       <Input
         type="checkbox"
         id="is-dark"
-        checked={isDark}
+        checked={isLight}
         onChange={onChange}
       />
       <Label htmlFor="is-dark">
         <Dog>
           <Ear />
-          <RightEar isDark={isDark} />
+          <RightEar isLight={isLight} />
           <Face>
             <Eyes />
-            <Mouth isDark={isDark} />
+            <Mouth isLight={isLight} />
           </Face>
         </Dog>
       </Label>

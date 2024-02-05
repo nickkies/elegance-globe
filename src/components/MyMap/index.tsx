@@ -17,7 +17,7 @@ import {
   PARTICLES_LAYER_INIT,
   GRADIENT_LAYER_INIT,
 } from '@/constants';
-import { colorSelector, fetchUV, isDarkAtom } from '@/atoms';
+import { colorSelector, fetchUV, isLightAtom } from '@/atoms';
 
 const Wrap = styled.div`
   width: 100%;
@@ -49,7 +49,7 @@ export default function MyMap() {
 
   const uvBuffer = useRecoilValue(fetchUV);
   const { rv, hex } = useRecoilValue(colorSelector);
-  const isDark = useRecoilValue(isDarkAtom);
+  const isLight = useRecoilValue(isLightAtom);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
@@ -118,12 +118,12 @@ export default function MyMap() {
     let removes;
     let adds;
 
-    if (isDark) {
-      removes = lightLayers;
-      adds = darkLayers;
-    } else {
+    if (isLight) {
       removes = darkLayers;
       adds = lightLayers;
+    } else {
+      removes = lightLayers;
+      adds = darkLayers;
     }
 
     Object.entries(adds).forEach((layer) => {
@@ -135,7 +135,7 @@ export default function MyMap() {
 
     // manage effects of layers is defined above uesEffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, isDark]);
+  }, [map, isLight]);
 
   return <Wrap ref={mapRef} />;
 }
