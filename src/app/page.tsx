@@ -5,12 +5,12 @@ import styled from 'styled-components';
 import { RecoilRoot } from 'recoil';
 
 import MixedBoundary from '@/components/Common/MixedBoundary';
-import Logo from '@/components/Logo';
 
 const MyMap = dynamic(() => import('@/components/MyMap'), { ssr: false });
 const Controls = dynamic(() => import('@/components/Controls'), {
   ssr: false,
 });
+const Logo = dynamic(() => import('@/components/Logo'), { ssr: false });
 
 const Wrap = styled.div`
   height: 100vh;
