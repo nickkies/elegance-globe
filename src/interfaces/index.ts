@@ -22,7 +22,5 @@ export interface GradientConfig extends Config {
 export interface ColorSelector {
   rv: number;
   deg: number;
-  degRev: number;
   hex: string;
-  hexRev: string;
 }

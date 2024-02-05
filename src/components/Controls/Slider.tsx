@@ -59,7 +59,7 @@ const RangeInput = styled.input<SlidProps>`
 export default function Slider() {
   const [rv, setRv]: [number, SetterOrUpdater<number>] =
     useRecoilState(referenceAtom);
-  const { degRev, hexRev }: ColorSelector = useRecoilValue(colorSelector);
+  const { deg, hex }: ColorSelector = useRecoilValue(colorSelector);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setRv(Number(e.currentTarget.value));
@@ -74,8 +74,8 @@ export default function Slider() {
         max="10"
         value={rv}
         onChange={onChange}
-        $deg={degRev}
-        $hex={hexRev}
+        $deg={deg}
+        $hex={hex}
       />
     </Wrap>
   );

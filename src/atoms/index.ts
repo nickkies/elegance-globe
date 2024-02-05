@@ -39,8 +39,6 @@ export const colorSelector = selector({
       rv,
       deg: rv * 36,
       hex: HEX_ARR[i],
-      degRev: rv * 36 + 180,
-      hexRev: HEX_ARR[i % HEX_ARR.length],
     };
   },
 });
