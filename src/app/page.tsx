@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { RecoilRoot } from 'recoil';
 
 import MixedBoundary from '@/components/Common/MixedBoundary';
+import Logo from '@/components/Logo';
 
 const MyMap = dynamic(() => import('@/components/MyMap'), { ssr: false });
 const Controls = dynamic(() => import('@/components/Controls'), {
@@ -21,6 +22,7 @@ export default function Home() {
   return (
     <RecoilRoot>
       <Wrap>
+        <Logo />
         <MixedBoundary>
           <MyMap />
         </MixedBoundary>
