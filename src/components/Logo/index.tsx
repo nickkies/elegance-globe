@@ -50,6 +50,7 @@ const Wrap = styled.div`
   cursor: pointer;
   isolation: isolate;
   transition: transform 0.5s ease;
+  transform-origin: top left;
   &:hover {
     transform: scale(2);
     transform-origin: top left;
