@@ -1,4 +1,4 @@
-import { Extent, getHeight, getWidth, getCenter, getSize } from 'ol/extent';
+import { Extent, getCenter, getSize } from 'ol/extent';
 import { create, scale, translate, multiply, Transform } from 'ol/transform';
 import { FrameState } from 'ol/PluggableMap';
 import { Map } from 'ol';
@@ -9,11 +9,11 @@ import { Map } from 'ol';
  * @returns {void}
  */
 export const randomizeCoordinates = (
-  extent: Extent,
+  [x1, y1, x2, y2]: Extent,
   coordinates: number[],
 ): void => {
-  coordinates[0] = Math.random() * getWidth(extent) + extent[0];
-  coordinates[1] = Math.random() * getHeight(extent) + extent[1];
+  coordinates[0] = Math.random() * (x2 - x1) + x1;
+  coordinates[1] = Math.random() * (y2 - y1) + y1;
 };
 
 /**
