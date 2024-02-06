@@ -100,7 +100,7 @@ export default function MyMap() {
   useEffect(() => {
     if (particlesLayer) {
       // console.count('change color');
-      const particles = rv * 500 + 499 * (isMobile ? 0.1 : 1);
+      const particles = (rv * 500 + 499) * (isMobile ? 0.1 : 1);
       particlesLayer.setData(hex, rv, particles);
     }
   }, [particlesLayer, hex, rv]);
