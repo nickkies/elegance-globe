@@ -82,15 +82,16 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     context: CanvasRenderingContext2D | null,
   ): void {
     if (!context) return;
-    context.fillStyle = this.hex;
+    // context.fillStyle = this.hex;
 
     this.advanceParticles(frameState, context);
+    context.fillStyle = `rgba(255, 255, 255, ${this.fading})`;
 
     const { width, height } = context.canvas;
-    context.globalAlpha = this.fading;
+    // context.globalAlpha = this.fading;
     context.globalCompositeOperation = 'destination-in';
     context.fillRect(0, 0, width, height);
-    context.globalAlpha = 1;
+    // context.globalAlpha = 1;
     context.globalCompositeOperation = 'source-over';
   }
 
