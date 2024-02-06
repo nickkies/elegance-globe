@@ -31,7 +31,6 @@ export default class UVBuffer {
     this.size = width * height;
 
     if (!us || !vs || us.length !== this.size || vs.length !== this.size) {
-      alert('🚨Check uv size🚨');
       throw new Error('🚨Check uv size🚨');
     }
 
