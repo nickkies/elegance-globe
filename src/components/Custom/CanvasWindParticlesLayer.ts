@@ -29,8 +29,6 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
 
   particleSize: number;
 
-  pixel: number[];
-
   viewportWithDataExtent: Extent;
 
   hex: string;
@@ -62,7 +60,6 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     }));
     this.fading = fading;
     this.particleSize = particleSize;
-    this.pixel = [];
     this.viewportWithDataExtent = createEmpty();
     this.hex = hex;
 
@@ -85,22 +82,14 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     context: CanvasRenderingContext2D | null,
   ): void {
     if (!context) return;
-
     context.fillStyle = this.hex;
 
     this.advanceParticles(frameState, context);
 
-    const { width, height } = context.canvas;
-    const pixelRatio = window.devicePixelRatio || 1;
-
+    // const { width, height } = context.canvas;
     context.globalAlpha = this.fading;
     context.globalCompositeOperation = 'destination-in';
-    context.fillRect(
-      0,
-      0,
-      Math.floor(width * pixelRatio),
-      Math.floor(height * pixelRatio),
-    );
+    context.fillRect(0, 0, 1000, 1000);
     context.globalAlpha = 1;
     context.globalCompositeOperation = 'source-over';
   }
