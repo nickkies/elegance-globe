@@ -43,10 +43,16 @@ export default function MyMap() {
       zIndex: 1,
     }),
   });
-  const [lightLayers, setLightLayers] = useState({
-    osm: new Tile({ source: new OSM(), zIndex: 1 }),
-    gradientLayer: new Layer({}),
-  });
+  const [lightLayers, setLightLayers] = useState(
+    isMobile
+      ? {
+          osm: new Tile({ source: new OSM(), zIndex: 1 }),
+        }
+      : {
+          osm: new Tile({ source: new OSM(), zIndex: 1 }),
+          gradientLayer: new Layer({}),
+        },
+  );
 
   const uvBuffer = useRecoilValue(fetchUV);
   const { rv, hex } = useRecoilValue(colorSelector);
