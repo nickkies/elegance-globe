@@ -1,12 +1,12 @@
 import { Observable } from 'ol';
 import { Layer } from 'ol/layer';
 import { FrameState } from 'ol/PluggableMap';
-import { apply } from 'ol/transform';
+// import { apply } from 'ol/transform';
 
 import { resizeCanvasIfNeeded } from '@/utils/mapUtils';
 import CustomCanvasLayer from './CustomCanvasLayer';
 
-let tmpPreviousCenterPixel: number[] = [];
+// let tmpPreviousCenterPixel: number[] = [];
 
 export default class CustomCanvasLayerRenderer extends Observable {
   layer: CustomCanvasLayer;
@@ -50,35 +50,35 @@ export default class CustomCanvasLayerRenderer extends Observable {
     const {
       canvases,
       // previousFrame: { canvasId, centerX, centerY, resolution },
-      previousFrame: { canvasId, centerX, centerY },
     } = this;
-    const previousCanvas = canvases[canvasId];
-    // const resized = resizeCanvasIfNeeded(frameState, previousCanvas);
-    resizeCanvasIfNeeded(frameState, previousCanvas);
+    /* const previousCanvas = canvases[canvasId];
+    const resized = resizeCanvasIfNeeded(frameState, previousCanvas);
     const nextResolution = frameState.viewState.resolution;
     const [currentCenterX, currentCenterY] = frameState.viewState.center;
 
     let nextCanvas = previousCanvas;
     let nextCanvasId = canvasId;
 
-    // if (!resized && resolution === nextResolution) {
-    // if (resolution === nextResolution) {
-    tmpPreviousCenterPixel = [centerX, centerY];
-    apply(frameState.coordinateToPixelTransform, tmpPreviousCenterPixel);
+    if (!resized && resolution === nextResolution) {
+      tmpPreviousCenterPixel = [centerX, centerY];
 
-    const dx = tmpPreviousCenterPixel[0] - frameState.size[0] / 2;
-    const dy = tmpPreviousCenterPixel[1] - frameState.size[1] / 2;
+      apply(frameState.coordinateToPixelTransform, tmpPreviousCenterPixel);
 
-    if (dx !== 0 || dy !== 0) {
-      nextCanvasId = (nextCanvasId + 1) % 2;
-      nextCanvas = canvases[nextCanvasId];
-      resizeCanvasIfNeeded(frameState, nextCanvas);
+      const dx = tmpPreviousCenterPixel[0] - frameState.size[0] / 2;
+      const dy = tmpPreviousCenterPixel[1] - frameState.size[1] / 2;
 
-      const newContext = nextCanvas.getContext('2d');
-      newContext?.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
-      newContext?.drawImage(previousCanvas, dx, dy);
+      if (dx !== 0 || dy !== 0) {
+        nextCanvasId = (nextCanvasId + 1) % 2;
+        nextCanvas = canvases[nextCanvasId];
+
+        resizeCanvasIfNeeded(frameState, nextCanvas);
+
+        const newContext = nextCanvas.getContext('2d');
+
+        newContext?.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+        newContext?.drawImage(previousCanvas, dx, dy);
+      }
     }
-    // }
 
     this.previousFrame = {
       canvasId: nextCanvasId,
@@ -87,11 +87,15 @@ export default class CustomCanvasLayerRenderer extends Observable {
       resolution: nextResolution,
     };
 
-    const ctx = nextCanvas.getContext('2d');
+    const ctx = nextCanvas.getContext('2d'); */
 
-    this.layer.doRender(frameState, ctx);
+    resizeCanvasIfNeeded(frameState, canvases[0]);
+
+    const ctx = canvases[0].getContext('2d');
 
     frameState.animate = true;
+
+    this.layer.doRender(frameState, ctx);
 
     return true;
   }
