@@ -101,7 +101,7 @@ export default function MyMap() {
     if (particlesLayer) {
       // console.count('change color');
       const particles = (rv * 500 + 499) * (isMobile ? 0.01 : 1);
-      particlesLayer.setData(hex, rv, particles);
+      particlesLayer.setData(hex, particles);
     }
   }, [particlesLayer, hex, rv]);
 

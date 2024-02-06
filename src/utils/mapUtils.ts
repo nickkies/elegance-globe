@@ -71,9 +71,14 @@ export const interpolatePosition = (
   [x, y]: number[],
   buffer: Float32Array | number[],
 ): number => {
-  if (x > width) throw new Error('🚨Out of bound🚨');
-  if (y * width + x >= buffer.length)
+  if (x > width) {
+    alert('🚨Out of bound🚨');
+    throw new Error('🚨Out of bound🚨');
+  }
+  if (y * width + x >= buffer.length) {
+    alert('🚨Out of buffer bound🚨');
     throw new Error('🚨Out of buffer bound🚨');
+  }
 
   const x1 = Math.floor(x);
   const y1 = Math.floor(y);
