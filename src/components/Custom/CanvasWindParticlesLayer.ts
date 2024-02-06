@@ -75,8 +75,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
   setData(hex: string, rv: number, length: number) {
     this.hex = hex;
     this.particles = Array.from({ length }).map(() => ({
-      // ttl: Math.random() * rv * 10,
-      ttl: 1,
+      ttl: Math.random() * this.ttl,
       coordinates: [],
     }));
   }
