@@ -10,6 +10,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
+import { isMobile } from 'react-device-detect';
 
 import { CanvasWindParticlesLayer, GradientLayer } from '@/components/Custom';
 import {
@@ -81,20 +82,19 @@ export default function MyMap() {
       uvBuffer,
       ...PARTICLES_LAYER_INIT,
     });
-
-    map.addLayer(canvasWindParticlesLayer);
-
-    const gradientLayer = new GradientLayer({
-      map,
-      uvBuffer,
-      ...GRADIENT_LAYER_INIT,
-    });
-
     canvasWindParticlesLayer.setZIndex(3);
-    gradientLayer.setZIndex(2);
-
+    map.addLayer(canvasWindParticlesLayer);
     setParticlesLayer(canvasWindParticlesLayer);
-    setLightLayers((prev) => ({ ...prev, gradientLayer }));
+
+    if (!isMobile) {
+      const gradientLayer = new GradientLayer({
+        map,
+        uvBuffer,
+        ...GRADIENT_LAYER_INIT,
+      });
+      gradientLayer.setZIndex(2);
+      setLightLayers((prev) => ({ ...prev, gradientLayer }));
+    }
   }, [map, uvBuffer]);
 
   useEffect(() => {
@@ -109,7 +109,7 @@ export default function MyMap() {
 
     // console.count('change layer group before check');
 
-    if (!(lightLayers.gradientLayer instanceof GradientLayer)) {
+    if (!(particlesLayer instanceof CanvasWindParticlesLayer)) {
       return;
     }
 
