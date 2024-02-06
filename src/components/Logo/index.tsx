@@ -157,8 +157,16 @@ const Shine = styled.span`
 `;
 
 export default function Logo() {
+  const moveRepo = () => {
+    const repo = window.open(
+      'https://github.com/nickkies/elegance-globe',
+      '_blank',
+    );
+    if (repo) repo.opener = null;
+  };
+
   return (
-    <Wrap>
+    <Wrap onClick={moveRepo}>
       <Shine />
       <Img src="/ddabong.svg" alt="Yoonsung Kim" />
     </Wrap>
