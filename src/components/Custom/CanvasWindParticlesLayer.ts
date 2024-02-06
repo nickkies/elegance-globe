@@ -108,41 +108,36 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     }: FrameState,
     context: CanvasRenderingContext2D,
   ): void {
-    const { uvBuffer, viewportWithDataExtent, particles, particleSize } = this;
+    getIntersection(this.uvBuffer.extent, extent, this.viewportWithDataExtent);
+    if (isEmpty(this.viewportWithDataExtent)) return;
 
-    getIntersection(uvBuffer.extent, extent, this.viewportWithDataExtent);
-
-    if (isEmpty(viewportWithDataExtent)) return;
-
-    particles.forEach((particle) => {
-      const { coordinates } = particle;
-
+    this.particles.forEach((particle) => {
       if (
-        coordinates.length === 0 ||
-        !containsCoordinate(viewportWithDataExtent, coordinates)
+        particle.coordinates.length === 0 ||
+        !containsCoordinate(this.viewportWithDataExtent, particle.coordinates)
       ) {
-        randomizeCoordinates(viewportWithDataExtent, coordinates);
+        randomizeCoordinates(this.viewportWithDataExtent, particle.coordinates);
       }
 
-      const pixel = [coordinates[0], coordinates[1]];
+      const pixel = [particle.coordinates[0], particle.coordinates[1]];
 
       applyTransform(coordinateToPixelTransform, pixel);
 
       context.fillRect(
         pixel[0] * pixelRatio,
         pixel[1] * pixelRatio,
-        particleSize * pixelRatio,
-        particleSize * pixelRatio,
+        this.particleSize * pixelRatio,
+        this.particleSize * pixelRatio,
       );
 
       particle.ttl -= 1;
 
       if (particle.ttl < 0) {
-        randomizeCoordinates(viewportWithDataExtent, coordinates);
+        randomizeCoordinates(this.viewportWithDataExtent, particle.coordinates);
         particle.ttl = this.ttl;
       }
 
-      const [u, v] = uvBuffer.getUVSpeed(coordinates);
+      const [u, v] = this.uvBuffer.getUVSpeed(particle.coordinates);
 
       particle.coordinates[0] += u * resolution;
       particle.coordinates[1] += v * resolution;
