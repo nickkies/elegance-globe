@@ -1,12 +1,10 @@
 import { Observable } from 'ol';
 import { Layer } from 'ol/layer';
 import { FrameState } from 'ol/PluggableMap';
-// import { apply } from 'ol/transform';
+import { apply } from 'ol/transform';
 
 import { resizeCanvasIfNeeded } from '@/utils/mapUtils';
 import CustomCanvasLayer from './CustomCanvasLayer';
-
-// let tmpPreviousCenterPixel: number[] = [];
 
 export default class CustomCanvasLayerRenderer extends Observable {
   layer: CustomCanvasLayer;
@@ -49,9 +47,9 @@ export default class CustomCanvasLayerRenderer extends Observable {
   prepareFrame(frameState: FrameState) {
     const {
       canvases,
-      // previousFrame: { canvasId, centerX, centerY, resolution },
+      previousFrame: { canvasId, centerX, centerY, resolution },
     } = this;
-    /* const previousCanvas = canvases[canvasId];
+    const previousCanvas = canvases[canvasId];
     const resized = resizeCanvasIfNeeded(frameState, previousCanvas);
     const nextResolution = frameState.viewState.resolution;
     const [currentCenterX, currentCenterY] = frameState.viewState.center;
@@ -60,7 +58,7 @@ export default class CustomCanvasLayerRenderer extends Observable {
     let nextCanvasId = canvasId;
 
     if (!resized && resolution === nextResolution) {
-      tmpPreviousCenterPixel = [centerX, centerY];
+      const tmpPreviousCenterPixel = [centerX, centerY];
 
       apply(frameState.coordinateToPixelTransform, tmpPreviousCenterPixel);
 
@@ -87,11 +85,7 @@ export default class CustomCanvasLayerRenderer extends Observable {
       resolution: nextResolution,
     };
 
-    const ctx = nextCanvas.getContext('2d'); */
-
-    resizeCanvasIfNeeded(frameState, canvases[0]);
-
-    const ctx = canvases[0].getContext('2d');
+    const ctx = nextCanvas.getContext('2d');
 
     frameState.animate = true;
 

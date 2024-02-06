@@ -8,7 +8,7 @@ export const MAP_INIT = {
 export const PARTICLES_LAYER_INIT = {
   particles: 3000,
   hex: '#b3a3ef',
-  ttl: 50,
+  ttl: 1,
   fading: 0.9,
   particleSize: 2,
 };
