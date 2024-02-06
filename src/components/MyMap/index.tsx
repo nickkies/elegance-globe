@@ -100,18 +100,13 @@ export default function MyMap() {
   useEffect(() => {
     if (particlesLayer) {
       // console.count('change color');
-      particlesLayer.setData(hex, rv);
+      const particles = rv * 500 + 499 * (isMobile ? 0.1 : 1);
+      particlesLayer.setData(hex, rv, particles);
     }
   }, [particlesLayer, hex, rv]);
 
   useEffect(() => {
-    if (!map) return;
-
-    // console.count('change layer group before check');
-
-    if (!(particlesLayer instanceof CanvasWindParticlesLayer)) {
-      return;
-    }
+    if (!map || !particlesLayer) return;
 
     // console.count('change layer group after check');
 
