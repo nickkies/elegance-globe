@@ -31,7 +31,7 @@ export default class CustomCanvasLayerRenderer extends Observable {
       canvasId: 0,
       centerX: 0,
       centerY: 0,
-      resolution: Infinity,
+      resolution: 0,
     };
   }
 
