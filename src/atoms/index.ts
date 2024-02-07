@@ -3,7 +3,7 @@ import { ColorSelector } from '@/interfaces';
 import { atom, selector } from 'recoil';
 
 import UVBuffer from '@/utils/UVBuffer';
-import { HEX_ARR } from '@/constants';
+import { HEX_ARR, RGB_ARR } from '@/constants';
 
 export const fetchUV = selector({
   key: 'fetchUV',
@@ -39,6 +39,7 @@ export const colorSelector = selector({
       rv,
       deg: rv * 36,
       hex: HEX_ARR[i],
+      rgb: RGB_ARR[i],
     };
   },
 });

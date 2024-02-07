@@ -31,7 +31,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
 
   viewportWithDataExtent: Extent;
 
-  hex: string;
+  rgb: string;
 
   constructor({
     map,
@@ -40,7 +40,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     ttl,
     fading,
     particleSize,
-    hex,
+    rgb,
   }: ParticleConfig) {
     super({
       renderFunction: (
@@ -49,7 +49,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
       ) => this.render(frameState, context),
     });
     if (!particles) throw new Error('🚨check particles🚨');
-    if (!hex) throw new Error('🚨check hex🚨');
+    if (!rgb) throw new Error('🚨check rgb🚨');
 
     this.map = map;
     this.uvBuffer = uvBuffer;
@@ -61,7 +61,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     this.fading = fading;
     this.particleSize = particleSize;
     this.viewportWithDataExtent = createEmpty();
-    this.hex = hex;
+    this.rgb = rgb;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this.map.getRenderer() as any).registerLayerRenderers([
@@ -69,8 +69,8 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     ]);
   }
 
-  setData(hex: string, length: number) {
-    this.hex = hex;
+  setData(rgb: string, length: number) {
+    this.rgb = rgb;
     this.particles = Array.from({ length }).map(() => ({
       ttl: Math.random() * this.ttl,
       coordinates: [],
@@ -82,16 +82,13 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     context: CanvasRenderingContext2D | null,
   ): void {
     if (!context) return;
-    // context.fillStyle = this.hex;
-
     this.advanceParticles(frameState, context);
-    context.fillStyle = `rgba(255, 255, 255, ${this.fading})`;
 
     const { width, height } = context.canvas;
-    // context.globalAlpha = this.fading;
+
+    context.fillStyle = `rgba(${this.rgb}, ${this.fading})`;
     context.globalCompositeOperation = 'destination-in';
     context.fillRect(0, 0, width, height);
-    // context.globalAlpha = 1;
     context.globalCompositeOperation = 'source-over';
   }
 

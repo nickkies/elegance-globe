@@ -55,7 +55,7 @@ export default function MyMap() {
   );
 
   const uvBuffer = useRecoilValue(fetchUV);
-  const { rv, hex } = useRecoilValue(colorSelector);
+  const { rv, rgb } = useRecoilValue(colorSelector);
   const isLight = useRecoilValue(isLightAtom);
 
   useEffect(() => {
@@ -106,10 +106,10 @@ export default function MyMap() {
   useEffect(() => {
     if (particlesLayer) {
       // console.count('change color');
-      const particles = (rv * 500 + 499) * (isMobile ? 0.01 : 1);
-      particlesLayer.setData(hex, particles);
+      const particles = (rv * 500 + 499) * (isMobile ? 0.5 : 1);
+      particlesLayer.setData(rgb, particles);
     }
-  }, [particlesLayer, hex, rv]);
+  }, [particlesLayer, rgb, rv]);
 
   useEffect(() => {
     if (!map || !particlesLayer) return;
