@@ -29,11 +29,9 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
 
   particleSize: number;
 
-  pixel: number[];
-
   viewportWithDataExtent: Extent;
 
-  hex: string;
+  rgb: string;
 
   constructor({
     map,
@@ -42,7 +40,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     ttl,
     fading,
     particleSize,
-    hex,
+    rgb,
   }: ParticleConfig) {
     super({
       renderFunction: (
@@ -51,7 +49,7 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
       ) => this.render(frameState, context),
     });
     if (!particles) throw new Error('🚨check particles🚨');
-    if (!hex) throw new Error('🚨check hex🚨');
+    if (!rgb) throw new Error('🚨check rgb🚨');
 
     this.map = map;
     this.uvBuffer = uvBuffer;
@@ -62,9 +60,8 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     }));
     this.fading = fading;
     this.particleSize = particleSize;
-    this.pixel = [];
     this.viewportWithDataExtent = createEmpty();
-    this.hex = hex;
+    this.rgb = rgb;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this.map.getRenderer() as any).registerLayerRenderers([
@@ -72,10 +69,10 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     ]);
   }
 
-  setData(hex: string, rv: number) {
-    this.hex = hex;
-    this.particles = Array.from({ length: rv * 500 + 499 }).map(() => ({
-      ttl: Math.random() * rv * 10,
+  setData(rgb: string, length: number) {
+    this.rgb = rgb;
+    this.particles = Array.from({ length }).map(() => ({
+      ttl: Math.random() * this.ttl,
       coordinates: [],
     }));
   }
@@ -85,17 +82,13 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     context: CanvasRenderingContext2D | null,
   ): void {
     if (!context) return;
-
-    context.fillStyle = this.hex;
-
     this.advanceParticles(frameState, context);
 
     const { width, height } = context.canvas;
 
-    context.globalAlpha = this.fading;
+    context.fillStyle = `rgba(${this.rgb}, ${this.fading})`;
     context.globalCompositeOperation = 'destination-in';
     context.fillRect(0, 0, width, height);
-    context.globalAlpha = 1;
     context.globalCompositeOperation = 'source-over';
   }
 
@@ -108,41 +101,36 @@ export default class CanvasWindParticlesLayer extends CustomCanvasLayer {
     }: FrameState,
     context: CanvasRenderingContext2D,
   ): void {
-    const { uvBuffer, viewportWithDataExtent, particles, particleSize } = this;
+    getIntersection(this.uvBuffer.extent, extent, this.viewportWithDataExtent);
+    if (isEmpty(this.viewportWithDataExtent)) return;
 
-    getIntersection(uvBuffer.extent, extent, this.viewportWithDataExtent);
-
-    if (isEmpty(viewportWithDataExtent)) return;
-
-    particles.forEach((particle) => {
-      const { coordinates } = particle;
-
+    this.particles.forEach((particle) => {
       if (
-        coordinates.length === 0 ||
-        !containsCoordinate(viewportWithDataExtent, coordinates)
+        particle.coordinates.length === 0 ||
+        !containsCoordinate(this.viewportWithDataExtent, particle.coordinates)
       ) {
-        randomizeCoordinates(viewportWithDataExtent, coordinates);
+        randomizeCoordinates(this.viewportWithDataExtent, particle.coordinates);
       }
 
-      const pixel = [coordinates[0], coordinates[1]];
+      const pixel = [particle.coordinates[0], particle.coordinates[1]];
 
       applyTransform(coordinateToPixelTransform, pixel);
 
       context.fillRect(
         pixel[0] * pixelRatio,
         pixel[1] * pixelRatio,
-        particleSize * pixelRatio,
-        particleSize * pixelRatio,
+        this.particleSize * pixelRatio,
+        this.particleSize * pixelRatio,
       );
 
       particle.ttl -= 1;
 
       if (particle.ttl < 0) {
-        randomizeCoordinates(viewportWithDataExtent, coordinates);
+        randomizeCoordinates(this.viewportWithDataExtent, particle.coordinates);
         particle.ttl = this.ttl;
       }
 
-      const [u, v] = uvBuffer.getUVSpeed(coordinates);
+      const [u, v] = this.uvBuffer.getUVSpeed(particle.coordinates);
 
       particle.coordinates[0] += u * resolution;
       particle.coordinates[1] += v * resolution;

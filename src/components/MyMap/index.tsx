@@ -10,6 +10,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
+import { isMobile } from 'react-device-detect';
 
 import { CanvasWindParticlesLayer, GradientLayer } from '@/components/Custom';
 import {
@@ -42,13 +43,19 @@ export default function MyMap() {
       zIndex: 1,
     }),
   });
-  const [lightLayers, setLightLayers] = useState({
-    osm: new Tile({ source: new OSM(), zIndex: 1 }),
-    gradientLayer: new Layer({}),
-  });
+  const [lightLayers, setLightLayers] = useState(
+    isMobile
+      ? {
+          osm: new Tile({ source: new OSM(), zIndex: 1 }),
+        }
+      : {
+          osm: new Tile({ source: new OSM(), zIndex: 1 }),
+          gradientLayer: new Layer({}),
+        },
+  );
 
   const uvBuffer = useRecoilValue(fetchUV);
-  const { rv, hex } = useRecoilValue(colorSelector);
+  const { rv, rgb } = useRecoilValue(colorSelector);
   const isLight = useRecoilValue(isLightAtom);
 
   useEffect(() => {
@@ -81,37 +88,31 @@ export default function MyMap() {
       uvBuffer,
       ...PARTICLES_LAYER_INIT,
     });
-
-    map.addLayer(canvasWindParticlesLayer);
-
-    const gradientLayer = new GradientLayer({
-      map,
-      uvBuffer,
-      ...GRADIENT_LAYER_INIT,
-    });
-
     canvasWindParticlesLayer.setZIndex(3);
-    gradientLayer.setZIndex(2);
-
+    map.addLayer(canvasWindParticlesLayer);
     setParticlesLayer(canvasWindParticlesLayer);
-    setLightLayers((prev) => ({ ...prev, gradientLayer }));
+
+    if (!isMobile) {
+      const gradientLayer = new GradientLayer({
+        map,
+        uvBuffer,
+        ...GRADIENT_LAYER_INIT,
+      });
+      gradientLayer.setZIndex(2);
+      setLightLayers((prev) => ({ ...prev, gradientLayer }));
+    }
   }, [map, uvBuffer]);
 
   useEffect(() => {
     if (particlesLayer) {
       // console.count('change color');
-      particlesLayer.setData(hex, rv);
+      const particles = (rv * 500 + 499) * (isMobile ? 0.5 : 1);
+      particlesLayer.setData(rgb, particles);
     }
-  }, [particlesLayer, hex, rv]);
+  }, [particlesLayer, rgb, rv]);
 
   useEffect(() => {
-    if (!map) return;
-
-    // console.count('change layer group before check');
-
-    if (!(lightLayers.gradientLayer instanceof GradientLayer)) {
-      return;
-    }
+    if (!map || !particlesLayer) return;
 
     // console.count('change layer group after check');
 

@@ -9,7 +9,7 @@ interface Config {
 
 export interface ParticleConfig extends Config {
   particles: number;
-  hex: string;
+  rgb: string;
   ttl: number;
   fading: number;
   particleSize: number;
@@ -23,4 +23,5 @@ export interface ColorSelector {
   rv: number;
   deg: number;
   hex: string;
+  rgb: string;
 }

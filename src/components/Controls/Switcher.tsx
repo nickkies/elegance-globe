@@ -69,7 +69,7 @@ const Ear = styled.div`
     inset -4px 0 0 0px #ffffff;
   transform: rotate(-40deg);
 `;
-const RightEar = styled(Ear)<{ $light: string }>`
+const RightEar = styled(Ear)<{ $light: boolean }>`
   left: auto;
   right: 0px;
   transform: scaleX(-1) rotate(-35deg);
@@ -102,7 +102,7 @@ const Eyes = styled.div`
     16px 0 0 #222,
     22px -4px 0 12px #e4ac04;
 `;
-const Mouth = styled.div<{ $light: string }>`
+const Mouth = styled.div<{ $light: boolean }>`
   position: absolute;
   background: #222;
   width: 14px;
@@ -153,10 +153,10 @@ export default function Switcher() {
       <Label htmlFor="is-light">
         <Dog>
           <Ear />
-          <RightEar $light={isLight.toString()} />
+          <RightEar $light={isLight} />
           <Face>
             <Eyes />
-            <Mouth $light={isLight.toString()} />
+            <Mouth $light={isLight} />
           </Face>
         </Dog>
       </Label>
