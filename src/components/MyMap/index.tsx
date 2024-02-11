@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 import { Map, View } from 'ol';
-import { get } from 'ol/proj';
 import { Layer, Tile } from 'ol/layer';
 import { OSM } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -25,33 +24,28 @@ const Wrap = styled.div`
   height: 100%;
 `;
 
+const koreaLayer = new VectorLayer({
+  source: new VectorSource({
+    url: '/data/korea.geojson',
+    format: new GeoJSON(),
+  }),
+  style: new Style({
+    stroke: new Stroke({ width: 1, color: [255, 255, 255, 0.7] }),
+  }),
+  zIndex: 1,
+});
+
+const osm = { osm: new Tile({ source: new OSM(), zIndex: 1 }) };
+
 export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
 
   const [map, setMap] = useState<Map | null>(null);
   const [particlesLayer, setParticlesLayer] =
     useState<CanvasWindParticlesLayer | null>(null);
-  const [darkLayers] = useState({
-    koreaLayer: new VectorLayer({
-      source: new VectorSource({
-        url: '/data/korea.geojson',
-        format: new GeoJSON(),
-      }),
-      style: new Style({
-        stroke: new Stroke({ width: 1, color: [255, 255, 255, 0.7] }),
-      }),
-      zIndex: 1,
-    }),
-  });
+  const [darkLayers] = useState({ koreaLayer });
   const [lightLayers, setLightLayers] = useState(
-    isMobile
-      ? {
-          osm: new Tile({ source: new OSM(), zIndex: 1 }),
-        }
-      : {
-          osm: new Tile({ source: new OSM(), zIndex: 1 }),
-          gradientLayer: new Layer({}),
-        },
+    isMobile ? osm : { ...osm, gradientLayer: new Layer({}) },
   );
 
   const uvBuffer = useRecoilValue(fetchUV);
@@ -62,10 +56,7 @@ export default function MyMap() {
     if (!mapRef.current) return undefined;
 
     const mapObj = new Map({
-      view: new View({
-        projection: get('EPSG:3857') || 'EPSG:4326',
-        ...MAP_INIT,
-      }),
+      view: new View(MAP_INIT),
       layers: [darkLayers.koreaLayer],
     });
 
