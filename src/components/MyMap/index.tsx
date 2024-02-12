@@ -1,3 +1,5 @@
+import { ColorSelector } from '@/interfaces';
+
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
@@ -18,6 +20,7 @@ import {
   GRADIENT_LAYER_INIT,
 } from '@/constants';
 import { colorSelector, fetchUV, isLightAtom } from '@/atoms';
+import UVBuffer from '@/utils/UVBuffer';
 
 const Wrap = styled.div`
   width: 100%;
@@ -43,14 +46,15 @@ export default function MyMap() {
   const [map, setMap] = useState<Map | null>(null);
   const [particlesLayer, setParticlesLayer] =
     useState<CanvasWindParticlesLayer | null>(null);
-  const [darkLayers] = useState({ koreaLayer });
-  const [lightLayers, setLightLayers] = useState(
-    isMobile ? osm : { ...osm, gradientLayer: new Layer({}) },
-  );
+  const [darkLayers] = useState<{ koreaLayer: VectorLayer }>({ koreaLayer });
+  const [lightLayers, setLightLayers] = useState<{
+    osm: Tile;
+    gradientLayer?: Layer;
+  }>(isMobile ? osm : { ...osm, gradientLayer: new Layer({}) });
 
-  const uvBuffer = useRecoilValue(fetchUV);
-  const { rv, rgb } = useRecoilValue(colorSelector);
-  const isLight = useRecoilValue(isLightAtom);
+  const uvBuffer = useRecoilValue<UVBuffer>(fetchUV);
+  const { rv, rgb } = useRecoilValue<ColorSelector>(colorSelector);
+  const isLight = useRecoilValue<boolean>(isLightAtom);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
