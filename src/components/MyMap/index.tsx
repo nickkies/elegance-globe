@@ -151,13 +151,18 @@ export default function MyMap() {
 
   useEffect(() => {
     changeRv(particlesLayer);
-  }, [particlesLayer, changeRv]);
+
+    // particlesLayer
+    // to prevent entry during the first rendering
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [changeRv]);
 
   useEffect(() => {
     if (!map || !particlesLayer) return;
 
     toggleLayers(map, lightLayers);
 
+    // lightLayers, particlesLayer
     // manage effects of layers is defined above uesEffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, toggleLayers]);
