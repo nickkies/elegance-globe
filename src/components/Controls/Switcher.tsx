@@ -136,7 +136,7 @@ const Mouth = styled.div<{ $light: boolean }>`
 `;
 
 export default function Switcher() {
-  const [isLight, setisLight] = useRecoilState(isLightAtom);
+  const [isLight, setisLight] = useRecoilState<boolean>(isLightAtom);
 
   const onChange = () => {
     setisLight(!isLight);

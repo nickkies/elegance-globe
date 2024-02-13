@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Observable } from 'ol';
 import { Layer } from 'ol/layer';
 import { FrameState } from 'ol/PluggableMap';

@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { ColorSelector } from '@/interfaces';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 import { Map, View } from 'ol';
-import { get } from 'ol/proj';
 import { Layer, Tile } from 'ol/layer';
 import { OSM } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -19,11 +20,32 @@ import {
   GRADIENT_LAYER_INIT,
 } from '@/constants';
 import { colorSelector, fetchUV, isLightAtom } from '@/atoms';
+import UVBuffer from '@/utils/UVBuffer';
+
+interface LightLayers {
+  osm: Tile;
+  gradientLayer?: Layer;
+}
 
 const Wrap = styled.div`
   width: 100%;
   height: 100%;
 `;
+
+const osm = { osm: new Tile({ source: new OSM(), zIndex: 1 }) };
+
+const darkLayers = {
+  koreaLayer: new VectorLayer({
+    source: new VectorSource({
+      url: '/data/korea.geojson',
+      format: new GeoJSON(),
+    }),
+    style: new Style({
+      stroke: new Stroke({ width: 1, color: [255, 255, 255, 0.7] }),
+    }),
+    zIndex: 1,
+  }),
+};
 
 export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -31,41 +53,17 @@ export default function MyMap() {
   const [map, setMap] = useState<Map | null>(null);
   const [particlesLayer, setParticlesLayer] =
     useState<CanvasWindParticlesLayer | null>(null);
-  const [darkLayers] = useState({
-    koreaLayer: new VectorLayer({
-      source: new VectorSource({
-        url: '/data/korea.geojson',
-        format: new GeoJSON(),
-      }),
-      style: new Style({
-        stroke: new Stroke({ width: 1, color: [255, 255, 255, 0.7] }),
-      }),
-      zIndex: 1,
-    }),
-  });
-  const [lightLayers, setLightLayers] = useState(
-    isMobile
-      ? {
-          osm: new Tile({ source: new OSM(), zIndex: 1 }),
-        }
-      : {
-          osm: new Tile({ source: new OSM(), zIndex: 1 }),
-          gradientLayer: new Layer({}),
-        },
-  );
+  const [lightLayers, setLightLayers] = useState<LightLayers>(osm);
 
-  const uvBuffer = useRecoilValue(fetchUV);
-  const { rv, rgb } = useRecoilValue(colorSelector);
-  const isLight = useRecoilValue(isLightAtom);
+  const uvBuffer = useRecoilValue<UVBuffer>(fetchUV);
+  const { rv, rgb } = useRecoilValue<ColorSelector>(colorSelector);
+  const isLight = useRecoilValue<boolean>(isLightAtom);
 
-  useEffect(() => {
-    if (!mapRef.current) return undefined;
+  const initMap = (): Map | null => {
+    if (!mapRef.current) return null;
 
     const mapObj = new Map({
-      view: new View({
-        projection: get('EPSG:3857') || 'EPSG:4326',
-        ...MAP_INIT,
-      }),
+      view: new View(MAP_INIT),
       layers: [darkLayers.koreaLayer],
     });
 
@@ -75,68 +73,92 @@ export default function MyMap() {
     mapObj.setTarget(mapRef.current);
     setMap(mapObj);
 
-    return () => mapObj.setTarget('');
-  }, [darkLayers.koreaLayer]);
+    return mapObj;
+  };
 
-  useEffect(() => {
-    if (!map) return;
-
-    // console.count('map init');
+  const initLayers = (mapObj: Map, buffer: UVBuffer) => {
+    const params = { map: mapObj, uvBuffer: buffer };
 
     const canvasWindParticlesLayer = new CanvasWindParticlesLayer({
-      map,
-      uvBuffer,
+      ...params,
       ...PARTICLES_LAYER_INIT,
     });
+
     canvasWindParticlesLayer.setZIndex(3);
-    map.addLayer(canvasWindParticlesLayer);
+    mapObj.addLayer(canvasWindParticlesLayer);
     setParticlesLayer(canvasWindParticlesLayer);
 
     if (!isMobile) {
       const gradientLayer = new GradientLayer({
-        map,
-        uvBuffer,
+        ...params,
         ...GRADIENT_LAYER_INIT,
       });
+
       gradientLayer.setZIndex(2);
       setLightLayers((prev) => ({ ...prev, gradientLayer }));
     }
+  };
+
+  const changeRv = useCallback(
+    (layer: CanvasWindParticlesLayer | null) => {
+      if (layer) {
+        const particles = (rv * 500 + 499) * (isMobile ? 0.5 : 1);
+        layer.setData(rgb, particles);
+      }
+    },
+    [rgb, rv],
+  );
+
+  const toggleLayers = useCallback(
+    (mapObj: Map, light: LightLayers) => {
+      let removes;
+      let adds;
+
+      if (isLight) {
+        removes = darkLayers;
+        adds = light;
+      } else {
+        removes = light;
+        adds = darkLayers;
+      }
+
+      Object.entries(adds).forEach((layer) => {
+        mapObj.addLayer(layer[1]);
+      });
+      Object.entries(removes).forEach((layer) => {
+        mapObj.removeLayer(layer[1]);
+      });
+    },
+    [isLight],
+  );
+
+  useEffect(() => {
+    const mapObj = initMap();
+    return () => mapObj?.setTarget('');
+  }, []);
+
+  useEffect(() => {
+    if (!map) return;
+    initLayers(map, uvBuffer);
   }, [map, uvBuffer]);
 
   useEffect(() => {
-    if (particlesLayer) {
-      // console.count('change color');
-      const particles = (rv * 500 + 499) * (isMobile ? 0.5 : 1);
-      particlesLayer.setData(rgb, particles);
-    }
-  }, [particlesLayer, rgb, rv]);
+    changeRv(particlesLayer);
+
+    // particlesLayer
+    // to prevent entry during the first rendering
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [changeRv]);
 
   useEffect(() => {
     if (!map || !particlesLayer) return;
 
-    // console.count('change layer group after check');
+    toggleLayers(map, lightLayers);
 
-    let removes;
-    let adds;
-
-    if (isLight) {
-      removes = darkLayers;
-      adds = lightLayers;
-    } else {
-      removes = lightLayers;
-      adds = darkLayers;
-    }
-
-    Object.entries(adds).forEach((layer) => {
-      map.addLayer(layer[1]);
-    });
-    Object.entries(removes).forEach((layer) => {
-      map.removeLayer(layer[1]);
-    });
-
+    // lightLayers, particlesLayer
     // manage effects of layers is defined above uesEffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, isLight]);
+  }, [map, toggleLayers]);
 
   return <Wrap ref={mapRef} />;
 }
