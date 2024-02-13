@@ -73,8 +73,6 @@ export default function MyMap() {
     mapObj.setTarget(mapRef.current);
     setMap(mapObj);
 
-    console.count('initMap');
-
     return mapObj;
   };
 
@@ -98,8 +96,6 @@ export default function MyMap() {
 
       gradientLayer.setZIndex(2);
       setLightLayers((prev) => ({ ...prev, gradientLayer }));
-
-      console.count('initLayers');
     }
   };
 
@@ -108,7 +104,6 @@ export default function MyMap() {
       if (layer) {
         const particles = (rv * 500 + 499) * (isMobile ? 0.5 : 1);
         layer.setData(rgb, particles);
-        console.count('change color');
       }
     },
     [rgb, rv],
@@ -133,8 +128,6 @@ export default function MyMap() {
       Object.entries(removes).forEach((layer) => {
         mapObj.removeLayer(layer[1]);
       });
-
-      console.count('toggleLayers');
     },
     [isLight],
   );
