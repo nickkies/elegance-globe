@@ -1,6 +1,6 @@
 import { ColorSelector } from '@/interfaces';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 import { Map, View } from 'ol';
@@ -21,6 +21,15 @@ import {
 } from '@/constants';
 import { colorSelector, fetchUV, isLightAtom } from '@/atoms';
 import UVBuffer from '@/utils/UVBuffer';
+
+interface DarkLayers {
+  koreaLayer: VectorLayer;
+}
+
+interface LightLayers {
+  osm: Tile;
+  gradientLayer?: Layer;
+}
 
 const Wrap = styled.div`
   width: 100%;
@@ -46,22 +55,21 @@ export default function MyMap() {
   const [map, setMap] = useState<Map | null>(null);
   const [particlesLayer, setParticlesLayer] =
     useState<CanvasWindParticlesLayer | null>(null);
-  const [darkLayers] = useState<{ koreaLayer: VectorLayer }>({ koreaLayer });
-  const [lightLayers, setLightLayers] = useState<{
-    osm: Tile;
-    gradientLayer?: Layer;
-  }>(isMobile ? osm : { ...osm, gradientLayer: new Layer({}) });
+  const [darkLayers] = useState<DarkLayers>({ koreaLayer });
+  const [lightLayers, setLightLayers] = useState<LightLayers>(
+    isMobile ? osm : { ...osm, gradientLayer: new Layer({}) },
+  );
 
   const uvBuffer = useRecoilValue<UVBuffer>(fetchUV);
   const { rv, rgb } = useRecoilValue<ColorSelector>(colorSelector);
   const isLight = useRecoilValue<boolean>(isLightAtom);
 
-  useEffect(() => {
-    if (!mapRef.current) return undefined;
+  const initMap = (layer: VectorLayer): Map | null => {
+    if (!mapRef.current) return null;
 
     const mapObj = new Map({
       view: new View(MAP_INIT),
-      layers: [darkLayers.koreaLayer],
+      layers: [layer],
     });
 
     const viewPort = mapObj.getViewport();
@@ -70,68 +78,94 @@ export default function MyMap() {
     mapObj.setTarget(mapRef.current);
     setMap(mapObj);
 
-    return () => mapObj.setTarget('');
-  }, [darkLayers.koreaLayer]);
+    console.count('initMap');
 
-  useEffect(() => {
-    if (!map) return;
+    return mapObj;
+  };
 
-    // console.count('map init');
+  const initLayers = (mapObj: Map, buffer: UVBuffer) => {
+    const params = { map: mapObj, uvBuffer: buffer };
 
     const canvasWindParticlesLayer = new CanvasWindParticlesLayer({
-      map,
-      uvBuffer,
+      ...params,
       ...PARTICLES_LAYER_INIT,
     });
+
     canvasWindParticlesLayer.setZIndex(3);
-    map.addLayer(canvasWindParticlesLayer);
+    mapObj.addLayer(canvasWindParticlesLayer);
     setParticlesLayer(canvasWindParticlesLayer);
 
     if (!isMobile) {
       const gradientLayer = new GradientLayer({
-        map,
-        uvBuffer,
+        ...params,
         ...GRADIENT_LAYER_INIT,
       });
+
       gradientLayer.setZIndex(2);
       setLightLayers((prev) => ({ ...prev, gradientLayer }));
+
+      console.count('initLayers');
     }
+  };
+
+  const changeRv = useCallback(
+    (layer: CanvasWindParticlesLayer | null) => {
+      if (layer) {
+        const particles = (rv * 500 + 499) * (isMobile ? 0.5 : 1);
+        layer.setData(rgb, particles);
+        console.count('change color');
+      }
+    },
+    [rgb, rv],
+  );
+
+  const toggleLayers = useCallback(
+    (mapObj: Map, dark: DarkLayers, light: LightLayers) => {
+      let removes;
+      let adds;
+
+      if (isLight) {
+        removes = dark;
+        adds = light;
+      } else {
+        removes = light;
+        adds = dark;
+      }
+
+      Object.entries(adds).forEach((layer) => {
+        mapObj.addLayer(layer[1]);
+      });
+      Object.entries(removes).forEach((layer) => {
+        mapObj.removeLayer(layer[1]);
+      });
+
+      console.count('toggleLayers');
+    },
+    [isLight],
+  );
+
+  useEffect(() => {
+    const mapObj = initMap(darkLayers.koreaLayer);
+    return !mapObj ? undefined : () => mapObj.setTarget('');
+  }, [darkLayers.koreaLayer]);
+
+  useEffect(() => {
+    if (!map) return;
+    initLayers(map, uvBuffer);
   }, [map, uvBuffer]);
 
   useEffect(() => {
-    if (particlesLayer) {
-      // console.count('change color');
-      const particles = (rv * 500 + 499) * (isMobile ? 0.5 : 1);
-      particlesLayer.setData(rgb, particles);
-    }
-  }, [particlesLayer, rgb, rv]);
+    changeRv(particlesLayer);
+  }, [particlesLayer, changeRv]);
 
   useEffect(() => {
     if (!map || !particlesLayer) return;
 
-    // console.count('change layer group after check');
-
-    let removes;
-    let adds;
-
-    if (isLight) {
-      removes = darkLayers;
-      adds = lightLayers;
-    } else {
-      removes = lightLayers;
-      adds = darkLayers;
-    }
-
-    Object.entries(adds).forEach((layer) => {
-      map.addLayer(layer[1]);
-    });
-    Object.entries(removes).forEach((layer) => {
-      map.removeLayer(layer[1]);
-    });
+    toggleLayers(map, darkLayers, lightLayers);
 
     // manage effects of layers is defined above uesEffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, isLight]);
+  }, [map, toggleLayers]);
 
   return <Wrap ref={mapRef} />;
 }
