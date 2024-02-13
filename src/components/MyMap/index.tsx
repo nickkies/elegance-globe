@@ -22,10 +22,6 @@ import {
 import { colorSelector, fetchUV, isLightAtom } from '@/atoms';
 import UVBuffer from '@/utils/UVBuffer';
 
-interface DarkLayers {
-  koreaLayer: VectorLayer;
-}
-
 interface LightLayers {
   osm: Tile;
   gradientLayer?: Layer;
@@ -36,18 +32,20 @@ const Wrap = styled.div`
   height: 100%;
 `;
 
-const koreaLayer = new VectorLayer({
-  source: new VectorSource({
-    url: '/data/korea.geojson',
-    format: new GeoJSON(),
-  }),
-  style: new Style({
-    stroke: new Stroke({ width: 1, color: [255, 255, 255, 0.7] }),
-  }),
-  zIndex: 1,
-});
-
 const osm = { osm: new Tile({ source: new OSM(), zIndex: 1 }) };
+
+const darkLayers = {
+  koreaLayer: new VectorLayer({
+    source: new VectorSource({
+      url: '/data/korea.geojson',
+      format: new GeoJSON(),
+    }),
+    style: new Style({
+      stroke: new Stroke({ width: 1, color: [255, 255, 255, 0.7] }),
+    }),
+    zIndex: 1,
+  }),
+};
 
 export default function MyMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -55,7 +53,6 @@ export default function MyMap() {
   const [map, setMap] = useState<Map | null>(null);
   const [particlesLayer, setParticlesLayer] =
     useState<CanvasWindParticlesLayer | null>(null);
-  const [darkLayers] = useState<DarkLayers>({ koreaLayer });
   const [lightLayers, setLightLayers] = useState<LightLayers>(
     isMobile ? osm : { ...osm, gradientLayer: new Layer({}) },
   );
@@ -64,12 +61,12 @@ export default function MyMap() {
   const { rv, rgb } = useRecoilValue<ColorSelector>(colorSelector);
   const isLight = useRecoilValue<boolean>(isLightAtom);
 
-  const initMap = (layer: VectorLayer): Map | null => {
+  const initMap = (): Map | null => {
     if (!mapRef.current) return null;
 
     const mapObj = new Map({
       view: new View(MAP_INIT),
-      layers: [layer],
+      layers: [darkLayers.koreaLayer],
     });
 
     const viewPort = mapObj.getViewport();
@@ -120,16 +117,16 @@ export default function MyMap() {
   );
 
   const toggleLayers = useCallback(
-    (mapObj: Map, dark: DarkLayers, light: LightLayers) => {
+    (mapObj: Map, light: LightLayers) => {
       let removes;
       let adds;
 
       if (isLight) {
-        removes = dark;
+        removes = darkLayers;
         adds = light;
       } else {
         removes = light;
-        adds = dark;
+        adds = darkLayers;
       }
 
       Object.entries(adds).forEach((layer) => {
@@ -145,9 +142,9 @@ export default function MyMap() {
   );
 
   useEffect(() => {
-    const mapObj = initMap(darkLayers.koreaLayer);
-    return !mapObj ? undefined : () => mapObj.setTarget('');
-  }, [darkLayers.koreaLayer]);
+    const mapObj = initMap();
+    return () => mapObj?.setTarget('');
+  }, []);
 
   useEffect(() => {
     if (!map) return;
@@ -161,7 +158,7 @@ export default function MyMap() {
   useEffect(() => {
     if (!map || !particlesLayer) return;
 
-    toggleLayers(map, darkLayers, lightLayers);
+    toggleLayers(map, lightLayers);
 
     // manage effects of layers is defined above uesEffect
     // eslint-disable-next-line react-hooks/exhaustive-deps
