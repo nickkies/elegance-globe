@@ -53,9 +53,7 @@ export default function MyMap() {
   const [map, setMap] = useState<Map | null>(null);
   const [particlesLayer, setParticlesLayer] =
     useState<CanvasWindParticlesLayer | null>(null);
-  const [lightLayers, setLightLayers] = useState<LightLayers>(
-    isMobile ? osm : { ...osm, gradientLayer: new Layer({}) },
-  );
+  const [lightLayers, setLightLayers] = useState<LightLayers>(osm);
 
   const uvBuffer = useRecoilValue<UVBuffer>(fetchUV);
   const { rv, rgb } = useRecoilValue<ColorSelector>(colorSelector);
