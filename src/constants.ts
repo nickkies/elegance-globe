@@ -1,4 +1,5 @@
 export const MAP_INIT = {
+  projection: 'EPSG:3857',
   zoom: 8,
   minZoom: 7,
   center: [14230000, 4400000],

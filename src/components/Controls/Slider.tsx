@@ -1,8 +1,9 @@
-import { SetterOrUpdater, useRecoilState, useRecoilValue } from 'recoil';
+import { ColorSelector } from '@/interfaces';
+
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { colorSelector, referenceAtom } from '@/atoms';
-import { ColorSelector } from '@/interfaces';
 
 interface SlidProps {
   $deg: number;
@@ -57,9 +58,8 @@ const RangeInput = styled.input<SlidProps>`
 `;
 
 export default function Slider() {
-  const [rv, setRv]: [number, SetterOrUpdater<number>] =
-    useRecoilState(referenceAtom);
-  const { deg, hex }: ColorSelector = useRecoilValue(colorSelector);
+  const [rv, setRv] = useRecoilState<number>(referenceAtom);
+  const { deg, hex } = useRecoilValue<ColorSelector>(colorSelector);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setRv(Number(e.currentTarget.value));
