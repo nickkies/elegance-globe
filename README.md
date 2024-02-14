@@ -20,3 +20,10 @@ npm start
 ```bash
 npm run dev
 ```
+
+## Licenses
+
+The project is dual licensed:
+
+- BSD-2 clause for its ease of use and reuse;
+- GPL-3 as a tribute to Richard Stallman's incredible work for liberty.
