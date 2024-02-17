@@ -33,6 +33,10 @@ npm start
 npm run dev
 ```
 
+## Data
+
+[Convert JSON to binary file repository](https://github.com/nickkies/hello-rust/tree/master/999.Stuff/write-binary-file)
+
 ## Dependencies
 
 ```json
